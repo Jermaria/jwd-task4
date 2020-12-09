@@ -28,6 +28,12 @@ public class DataToBookConverter {
     private static final DataToBookConverter instance = new DataToBookConverter();
     private static final Logger logger = LogManager.getLogger();
     
+    private static final String VALUE_REGEX = "=.+";
+    private static final String NAME_REGEX = "[A-Z]+[_]?[A-Z]+=";
+    private static final String SPLITTER_REGEX = "[,;]$";
+    private static final String UNDERSCORE = "_";   
+    private static final String SPACE = " ";
+    private static final String EMPTY_STRING = "";
     private static final String TITLE = "TITLE";
     private static final String AUTHOR_NAME = "AUTHOR_NAME";
     private static final String AUTHOR_SURNAME = "AUTHOR_SURNAME";
@@ -76,7 +82,7 @@ public class DataToBookConverter {
     }
     
     public Book convertDataToBook(String bookData) throws ValidationException {
-        String[] bookDataDetails = bookData.split(" ");
+        String[] bookDataDetails = bookData.split(SPACE);
         Map<String, String> processedDetails= processBookDataDetails(bookDataDetails);
         Book book = createBookByData(processedDetails);
         return book;        
@@ -84,11 +90,11 @@ public class DataToBookConverter {
     
     public Map<String, String> processBookDataDetails(String[] bookDataDetails) {
         Map<String, String> processedDetails = new HashMap<String, String>();
-        for (int i = 2; i < bookDataDetails.length; i++ ) {
+        for (int i = 2; i < bookDataDetails.length; i++) {
             
-            String detailName = bookDataDetails[i].replaceAll("=.+", "");
-            String detailValue = bookDataDetails[i].replaceAll("[A-Z]+[_]?[A-Z]+=", "").replaceAll("[,;]$", "")
-                                                                                         .replaceAll("_", " ");
+            String detailName = bookDataDetails[i].replaceAll(VALUE_REGEX, EMPTY_STRING);
+            String detailValue = bookDataDetails[i].replaceAll(NAME_REGEX, EMPTY_STRING).replaceAll(SPLITTER_REGEX, EMPTY_STRING)
+                                                                                         .replaceAll(UNDERSCORE, SPACE);
             processedDetails.put(detailName, detailValue);
         }
         return processedDetails;
